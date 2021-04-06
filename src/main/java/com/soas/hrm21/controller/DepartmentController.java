@@ -1,12 +1,12 @@
 package com.soas.hrm21.controller;
 
 import java.net.URI;
-import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -18,10 +18,12 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import com.soas.hrm21.entity.Department;
+import com.soas.hrm21.exception.ResourceNotFoundException;
 import com.soas.hrm21.repository.DepartmentRepository;
 
 @RestController
 @RequestMapping("/api/v1/department")
+@CrossOrigin
 public class DepartmentController {
 
 	@Autowired
@@ -35,33 +37,31 @@ public class DepartmentController {
 	}
 
 	@PutMapping("/{id}")
-	public ResponseEntity<Department> update(@PathVariable Long id, @RequestBody Department department) {
-		Optional<Department> optionalDepartment = departmentRepository.findById(id);
-		if (!optionalDepartment.isPresent()) {
-			return ResponseEntity.unprocessableEntity().build();
-		}
-		department.setDepartmentId(optionalDepartment.get().getDepartmentId());
-		departmentRepository.save(department);
+	public ResponseEntity<Department> update(@PathVariable Long id, @RequestBody Department departmentTmp) {
+		Department department = departmentRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Department not found for Id : " + id));
+		departmentTmp.setDepartmentId(department.getDepartmentId());
+		departmentRepository.save(departmentTmp);
 		return ResponseEntity.noContent().build();
 	}
 
 	@DeleteMapping("/{id}")
 	public ResponseEntity<Department> delete(@PathVariable Long id) {
-		Optional<Department> optionalDepartment = departmentRepository.findById(id);
-		if (!optionalDepartment.isPresent()) {
-			return ResponseEntity.unprocessableEntity().build();
-		}
-		departmentRepository.delete(optionalDepartment.get());
+		Department department = departmentRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Department not found for Id : " + id));
+		departmentRepository.delete(department);
+		// deleteDepartmentInTransaction(optionalDepartment.get());
 		return ResponseEntity.noContent().build();
 	}
 
+	/**
+	 * void deleteDepartmentInTransaction(Department department) {
+	 * employeeRepository.deleteByDepartmentId(department.getDepartmentId());
+	 * departmentRepository.delete(department); }
+	 */
+
 	@GetMapping("/{id}")
 	public ResponseEntity<Department> getById(@PathVariable Long id) {
-		Optional<Department> optionalDepartment = departmentRepository.findById(id);
-		if (!optionalDepartment.isPresent()) {
-			return ResponseEntity.unprocessableEntity().build();
-		}
-		return ResponseEntity.ok(optionalDepartment.get());
+		Department department = departmentRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Department not found for Id : " + id));
+		return ResponseEntity.ok(department);
 	}
 
 	@GetMapping

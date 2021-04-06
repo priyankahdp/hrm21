@@ -1,6 +1,6 @@
 package com.soas.hrm21.entity;
 
-import java.time.LocalDateTime;
+import java.io.Serializable;
 import java.util.List;
 
 import javax.persistence.CascadeType;
@@ -19,31 +19,28 @@ import lombok.Data;
 @Data
 @Entity(name = "Department")
 @Table(name = "department")
-public class Department {
+public class Department extends AuditEntity implements Serializable {
+
+	private static final long serialVersionUID = 368719600023084454L;
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	@Column(name = "department_id", updatable = false)
+	@Column(name = "department_id")
 	private long departmentId;
 
-	@Column(name = "department_name", nullable = false)
+	@Column(unique = true)
 	private String departmentName;
-
-	@Column(name = "department_Type", nullable = false)
+	
 	private String departmentType;
 
+	// @OneToMany(mappedBy = "department", cascade{CascadeType.PERSIST,CascadeType.MERGE})
 	@OneToMany(mappedBy = "department", cascade = CascadeType.ALL)
 	@JsonIgnore
 	private List<Employee> employees;
 
-	private LocalDateTime created;
-	private LocalDateTime updated;
-
-	public Department(String departmentName, String departmentType, LocalDateTime created, LocalDateTime updated) {
+	public Department(String departmentName, String departmentType) {
 		this.departmentName = departmentName;
 		this.departmentType = departmentType;
-		this.created = created;
-		this.updated = updated;
 	}
 
 	public Department() {
