@@ -35,6 +35,8 @@ public class Employee extends AuditEntity implements Serializable {
 	private String firstName;
 
 	private String lastName;
+	
+	private String avatar;
 
 	@Column(unique = true)
 	private String mobile;

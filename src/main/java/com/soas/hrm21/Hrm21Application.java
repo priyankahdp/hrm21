@@ -24,9 +24,9 @@ public class Hrm21Application {
 			DepartmentRepository departmentRepository) {
 		return args -> {
 			Department department = new Department("Sales", "Admin");
-			departmentRepository.save(department);
+			//departmentRepository.save(department);
 			Employee employee = new Employee("Priyanka", "Kulathilake", "0716172931", "Kelaniya", department);
-			employeeRepository.save(employee);
+			//employeeRepository.save(employee);
 		};
 	}
 }
